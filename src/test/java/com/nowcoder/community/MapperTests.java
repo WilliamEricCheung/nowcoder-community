@@ -22,4 +22,19 @@ public class MapperTests {
         User user = userService.findUserById(101);
         System.out.println(user);
     }
+
+    @Test
+    public void testAddUser(){
+        User user = new User();
+        user.setUsername("testAdd");
+        user.setPassword("pwd");
+        int result = userService.addUser(user);
+        System.out.println(result);
+    }
+
+    @Test
+    public void testUpdateStatus(){
+        int result = userService.updateStatus(150, 1);
+        System.out.println(result);
+    }
 }
