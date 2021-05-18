@@ -24,18 +24,7 @@ spring:
     encoding: UTF-8
     mode: HTML
     servlet:
-      content-type: text/html     
-  redis:
-    host: 127.0.0.1
-    password:
-    port: 6379
-    database: 0
-    timeout: 10000
-    jedis:
-      pool:
-        max-active: 600
-        max-idle: 300
-        max-wait: 1000
+      content-type: text/html
   http:
     encoding:
       charset: UTF-8
@@ -58,10 +47,11 @@ pagehelper:
   params: count=countSql
 
 mybatis-plus:
-  type-aliases-package: com.zky.entity
+  type-aliases-package: com.nowcoder.community.entity
   mapper-locations: classpath:mapper/*.xml
   configuration:
     map-underscore-to-camel-case: true
+#    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
     
 mapper:
   mappers: com.dhhb.common.MyMapper
