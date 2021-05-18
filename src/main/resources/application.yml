@@ -45,6 +45,7 @@ pagehelper:
   reasonable: true
   support-methods-arguments: true
   params: count=countSql
+  page-size-zero: true
 
 mybatis-plus:
   type-aliases-package: com.nowcoder.community.entity
@@ -52,11 +53,17 @@ mybatis-plus:
   configuration:
     map-underscore-to-camel-case: true
 #    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
-    
 mapper:
   mappers: com.dhhb.common.MyMapper
   not-empty: false
   identity: MYSQL
+
+logging:
+  level:
+    root: INFO
+    org.hibernate: INFO
+    org.hibernate.type.descriptor.sql.BasicBinder: TRACE
+    org.hibernate.type.descriptor.sql.BasicExtractor: TRACE
   
 #jwt配置
 config:
