@@ -7,6 +7,7 @@ import com.nowcoder.community.entity.DiscussPost;
 import com.nowcoder.community.entity.User;
 import com.nowcoder.community.service.DiscussPostService;
 import com.nowcoder.community.service.UserService;
+import com.nowcoder.community.util.PageUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -32,8 +33,6 @@ public class HomeController {
     public String getIndexPage(Model model,
                                @RequestParam(defaultValue = "1", value = "pageNum") Integer pageNum){
         List<DiscussPost> list = discussPostService.findDiscussPosts(0);
-        PageHelper.startPage(pageNum, 10);
-        PageInfo<DiscussPost> posts = new PageInfo<>(list);
         List<Map<String, Object>> discussPosts = new ArrayList<>();
         if (list.size() > 0){
             for (DiscussPost post: list){
@@ -44,8 +43,7 @@ public class HomeController {
                 discussPosts.add(map);
             }
         }
-        PageHelper.startPage(pageNum, 10);
-        PageInfo<Map<String, Object>> pageInfo = new PageInfo<>(discussPosts);
+        PageInfo<Map<String, Object>> pageInfo = PageUtil.startPage(discussPosts, pageNum, 10);
         log.info("Pages: " + pageInfo.getPages() + " PageNum: " + pageInfo.getPageNum() +" PageSize: " + pageInfo.getPageSize());
         model.addAttribute("discussPosts", pageInfo);
         return "/index";
