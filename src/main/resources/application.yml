@@ -58,12 +58,14 @@ mapper:
   not-empty: false
   identity: MYSQL
 
-logging:
-  level:
-    root: INFO
-    org.hibernate: INFO
-    org.hibernate.type.descriptor.sql.BasicBinder: TRACE
-    org.hibernate.type.descriptor.sql.BasicExtractor: TRACE
+#logging:
+#  level:
+#    root: INFO
+#    org.hibernate: INFO
+#    org.hibernate.type.descriptor.sql.BasicBinder: TRACE
+#    org.hibernate.type.descriptor.sql.BasicExtractor: TRACE
+#  file: src/main/resources/community.log
+
   
 #jwt配置
 config:

@@ -140,9 +140,6 @@
 					</li>
 				</ul>
 				<!-- 分页 -->
-				<div th:text="${discussPosts.total}">??</div>
-				<div th:text="${discussPosts.pages}">??</div>
-				<div th:text="${discussPosts.pageNum}">??</div>
 				<nav class="mt-5" th:if="${discussPosts.total>0}">
 					<ul class="pagination justify-content-center">
 						<li class="page-item">
@@ -151,7 +148,7 @@
 						<li th:class="|page-item ${discussPosts.pageNum==1?'disabled':''}|">
 							<a class="page-link" th:href="@{/index(pageNum=${discussPosts.hasPreviousPage}?${discussPosts.prePage}:1)}">上一页</a></li>
 						<li th:class="|page-item ${i==discussPosts.pageNum?'active':''}|" th:each="i:${#numbers.sequence(discussPosts.getNavigateFirstPage(),discussPosts.getNavigateLastPage())}">
-							<a class="page-link" href="#" th:text="${i}">1</a>
+							<a class="page-link" th:href="@{/index(pageNum=${i})}" th:text="${i}">1</a>
 						</li>
 						<li th:class="|page-item ${discussPosts.pageNum==discussPosts.pages?'disabled':''}|">
 							<a class="page-link" th:href="@{/index(pageNum=${discussPosts.hasNextPage}?${discussPosts.nextPage}:${discussPosts.pages})}">下一页</a>
