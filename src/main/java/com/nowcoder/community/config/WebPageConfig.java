@@ -20,9 +20,9 @@ public class WebPageConfig implements WebMvcConfigurer, ErrorPageRegistrar {
     @Override
     public void addViewControllers(ViewControllerRegistry registry) {
         //浏览器会发送/dhu请求，来到success.html
-        registry.addViewController("").setViewName("/index");
-        registry.addViewController("/").setViewName("/index");
-        registry.addViewController("/index").setViewName("/index");
+        registry.addViewController("").setViewName("index");
+        registry.addViewController("/").setViewName("index");
+        registry.addViewController("/index").setViewName("index");
 //        registry.addViewController("/login").setViewName("login");
 //        registry.addViewController("/error").setViewName("login");
     }

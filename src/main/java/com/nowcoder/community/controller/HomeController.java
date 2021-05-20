@@ -1,7 +1,5 @@
 package com.nowcoder.community.controller;
 
-import com.github.pagehelper.Page;
-import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.nowcoder.community.entity.DiscussPost;
 import com.nowcoder.community.entity.User;
@@ -29,13 +27,18 @@ public class HomeController {
     @Autowired
     private UserService userService;
 
+    @GetMapping("/")
+    public String index() {
+         return "redirect:/index";
+    }
+
     @GetMapping("/index")
     public String getIndexPage(Model model,
-                               @RequestParam(defaultValue = "1", value = "pageNum") Integer pageNum){
+                               @RequestParam(defaultValue = "1", value = "pageNum") Integer pageNum) {
         List<DiscussPost> list = discussPostService.findDiscussPosts(0);
         List<Map<String, Object>> discussPosts = new ArrayList<>();
-        if (list.size() > 0){
-            for (DiscussPost post: list){
+        if (list.size() > 0) {
+            for (DiscussPost post : list) {
                 Map<String, Object> map = new HashMap<>();
                 map.put("post", post);
                 User user = userService.findUserById(post.getUserId());
@@ -44,7 +47,7 @@ public class HomeController {
             }
         }
         PageInfo<Map<String, Object>> pageInfo = PageUtil.startPage(discussPosts, pageNum, 10);
-        log.info("Pages: " + pageInfo.getPages() + " PageNum: " + pageInfo.getPageNum() +" PageSize: " + pageInfo.getPageSize());
+        log.info("Pages: " + pageInfo.getPages() + " PageNum: " + pageInfo.getPageNum() + " PageSize: " + pageInfo.getPageSize());
         model.addAttribute("discussPosts", pageInfo);
         return "/index";
     }
