@@ -32,7 +32,20 @@ spring:
       enabled: true
   profiles:
     active: prod
-      
+  mail:
+    host: smtp.qq.com
+#    port: 465
+    username: 739667463@qq.com
+    password: uqajfxsyqwmbbfgh
+#    protocol: smtps
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+            required: true
+
 server:
   tomcat:
     uri-encoding: UTF-8
@@ -57,14 +70,6 @@ mapper:
   mappers: com.dhhb.common.MyMapper
   not-empty: false
   identity: MYSQL
-
-#logging:
-#  level:
-#    root: INFO
-#    org.hibernate: INFO
-#    org.hibernate.type.descriptor.sql.BasicBinder: TRACE
-#    org.hibernate.type.descriptor.sql.BasicExtractor: TRACE
-#  file: src/main/resources/community.log
 
   
 #jwt配置
