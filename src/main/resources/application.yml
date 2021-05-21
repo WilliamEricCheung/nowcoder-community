@@ -71,6 +71,11 @@ mapper:
   not-empty: false
   identity: MYSQL
 
+# 自定义配置
+community:
+  path:
+    domain: http://localhost:8080
+
   
 #jwt配置
 config:
