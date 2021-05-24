@@ -12,9 +12,11 @@ import com.nowcoder.community.util.Constant;
 import com.nowcoder.community.util.MailClient;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 
@@ -114,6 +116,39 @@ public class UserServiceImpl implements UserService, Constant {
     }
 
     @Override
+    public Map<String, Object> verify(String email, String code) {
+        Map<String, Object> map = new HashMap<>();
+        if (StringUtils.isBlank(email)){
+            map.put("emailMsg", "邮箱不能为空!");
+            return map;
+        }
+        User user = findUserByEmail(email);
+        if (user == null){
+            map.put("emailMsg", "该邮箱不存在!");
+            return map;
+        }
+        // 验证邮件
+        Context context = new Context();
+        context.setVariable("email", user.getEmail());
+        context.setVariable("code", code);
+        String content = templateEngine.process("/mail/forget", context);
+        mailClient.sendMail(user.getEmail(), "重置账号密码", content);
+        return map;
+    }
+
+    @Override
+    public int resetPassword(String email, String password) {
+        User user = findUserByEmail(email);
+        password = CodeUtil.md5(password + user.getSalt());
+        if (user.getPassword().equals(password)){
+            return RESET_REPEAT;
+        }else{
+            updatePassword(user.getId(), password);
+            return RESET_SUCCESS;
+        }
+    }
+
+    @Override
     public Map<String, Object> login(String username, String password, int expiredSeconds) {
         Map<String, Object> map = new HashMap<>();
         // 空值处理
@@ -138,7 +173,7 @@ public class UserServiceImpl implements UserService, Constant {
         }
         // 验证密码
         password = CodeUtil.md5(password + user.getSalt());
-        if (user.getPassword().equals(password)){
+        if (!user.getPassword().equals(password)){
             map.put("passwordMsg", "密码不正确");
             return map;
         }

@@ -3,6 +3,7 @@ package com.nowcoder.community.controller;
 import com.google.code.kaptcha.Producer;
 import com.nowcoder.community.entity.User;
 import com.nowcoder.community.service.UserService;
+import com.nowcoder.community.util.CodeUtil;
 import com.nowcoder.community.util.Constant;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -10,10 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.CookieValue;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.*;
 
 import javax.imageio.ImageIO;
 import javax.servlet.http.Cookie;
@@ -48,6 +46,11 @@ public class LoginController implements Constant {
         return "/site/login";
     }
 
+    @GetMapping("/forget")
+    public String getForgetPage(){
+        return "/site/forget";
+    }
+
     @PostMapping("/register")
     public String register(Model model, User user){
         Map<String , Object> map = userService.register(user);
@@ -60,6 +63,49 @@ public class LoginController implements Constant {
             model.addAttribute("passwordMsg", map.get("passwordMsg"));
             model.addAttribute("emailMsg", map.get("emailMsg"));
             return "/site/register";
+        }
+    }
+
+    @GetMapping("/verify")
+    public String sendVerification(Model model, @RequestParam(defaultValue = "",value = "email") String email, HttpSession session){
+        // 生成验证码
+        String code = CodeUtil.generateUUID().substring(0, 6);
+        Map<String, Object> map = userService.verify(email, code);
+        if (map == null || map.isEmpty()){
+            session.setAttribute("code", code);
+            session.setAttribute("email", email);
+        }else{
+            model.addAttribute("emailMsg", map.get("emailMsg"));
+        }
+        model.addAttribute("email", email);
+        return "/site/forget";
+    }
+
+    @PostMapping("/forget")
+    public String forget(String email, String password, String code,
+                         Model model, HttpSession session){
+        String verifyCode = (String)session.getAttribute("code");
+        String emailVerified = (String)session.getAttribute("email");
+        // 检查验证码
+        if (StringUtils.isBlank(verifyCode) || StringUtils.isBlank(code) || !verifyCode.equals(code)){
+            model.addAttribute("codeMsg", "验证码不正确！");
+            return "/site/forget";
+        }
+        if (StringUtils.isBlank(email) || !emailVerified.equals(email)){
+            model.addAttribute("emailMsg", "邮箱错误！");
+            return "/site/forget";
+        }
+        // 重置密码
+        int result = userService.resetPassword(email, password);
+        if (result == RESET_SUCCESS){
+            model.addAttribute("msg", "密码重置成功，您的账号已经可以正常使用了！");
+            model.addAttribute("target", "/login");
+            return "/site/operate-result";
+        }else if (result == RESET_REPEAT){
+            model.addAttribute("passwordMsg", "无效操作，重复设置账号密码！");
+            return "/site/forget";
+        }else{
+            return "/site/forget";
         }
     }
 
