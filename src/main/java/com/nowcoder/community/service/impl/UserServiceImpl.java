@@ -2,7 +2,9 @@ package com.nowcoder.community.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
+import com.nowcoder.community.entity.LoginTicket;
 import com.nowcoder.community.entity.User;
+import com.nowcoder.community.mapper.LoginTicketMapper;
 import com.nowcoder.community.mapper.UserMapper;
 import com.nowcoder.community.service.UserService;
 import com.nowcoder.community.util.CodeUtil;
@@ -39,6 +41,9 @@ public class UserServiceImpl implements UserService, Constant {
 
     @Value("${server.servlet.context-path}")
     private String contextPath;
+
+    @Autowired
+    private LoginTicketMapper loginTicketMapper;
 
     @Override
     public Map<String, Object> register(User user) {
@@ -109,6 +114,52 @@ public class UserServiceImpl implements UserService, Constant {
     }
 
     @Override
+    public Map<String, Object> login(String username, String password, int expiredSeconds) {
+        Map<String, Object> map = new HashMap<>();
+        // 空值处理
+        if(StringUtils.isBlank(username)){
+            map.put("usernameMsg", "账号不能为空");
+            return map;
+        }
+        if (StringUtils.isBlank(password)){
+            map.put("passwordMsg", "密码不能为空");
+            return map;
+        }
+        // 验证账号
+        User user = findUserByName(username);
+        if (user == null){
+            map.put("usernameMsg", "该账号不存在！");
+            return map;
+        }
+        // 验证状态
+        if (user.getStatus() == 0){
+            map.put("usernameMsg", "该账号未激活！");
+            return map;
+        }
+        // 验证密码
+        password = CodeUtil.md5(password + user.getSalt());
+        if (user.getPassword().equals(password)){
+            map.put("passwordMsg", "密码不正确");
+            return map;
+        }
+        // 生成登录凭证
+        LoginTicket loginTicket = new LoginTicket();
+        loginTicket.setUserId(user.getId());
+        loginTicket.setTicket(CodeUtil.generateUUID());
+        loginTicket.setStatus(0);
+        loginTicket.setExpired(new Date(System.currentTimeMillis() + expiredSeconds * 1000L));
+        insertLoginTicket(loginTicket);
+
+        map.put("ticket", loginTicket.getTicket());
+        return map;
+    }
+
+    @Override
+    public void logout(String ticket) {
+        updateStatus(ticket, 1);
+    }
+
+    @Override
     public User findUserById(int id) {
         QueryWrapper<User> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("id", id);
@@ -159,5 +210,26 @@ public class UserServiceImpl implements UserService, Constant {
         updateWrapper.eq("id", id);
         user.setPassword(password);
         return userMapper.update(user, updateWrapper);
+    }
+
+    @Override
+    public int insertLoginTicket(LoginTicket loginTicket) {
+        return loginTicketMapper.insert(loginTicket);
+    }
+
+    @Override
+    public LoginTicket selectByTicket(String ticket) {
+        QueryWrapper<LoginTicket> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("ticket", ticket);
+        return loginTicketMapper.selectOne(queryWrapper);
+    }
+
+    @Override
+    public int updateStatus(String ticket, int status) {
+        LoginTicket loginTicket = selectByTicket(ticket);
+        UpdateWrapper<LoginTicket> updateWrapper = new UpdateWrapper<>();
+        updateWrapper.eq("ticket", ticket);
+        updateWrapper.set("status", status);
+        return loginTicketMapper.update(loginTicket, updateWrapper);
     }
 }
