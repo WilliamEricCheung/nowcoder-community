@@ -68,7 +68,7 @@
 						<div class="col-sm-10">
 							<input type="email" th:class="|form-control ${emailMsg!=null? 'is-invalid':''}|" th:value="${email!=null? email:''}"
 								   id="your-email" name="email" placeholder="请输入您的邮箱!" required>
-							<div class="invalid-feedback" th:text="${emailMsg}">
+							<div class="invalid-feedback" id="email-feedback" th:text="${emailMsg}">
 								该邮箱不存在!
 							</div>
 						</div>
@@ -83,7 +83,7 @@
 							</div>
 						</div>
 						<div class="col-sm-4">
-							<a href="javascript:get_verification()" id="code" class="btn btn-info form-control">获取验证码</a>
+							<a href="javascript:;" id="code" class="btn btn-info form-control">获取验证码</a>
 						</div>
 					</div>	
 					<div class="form-group row mt-4">
@@ -174,12 +174,25 @@
 	<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" crossorigin="anonymous"></script>
 	<script th:src="@{/js/global.js}"></script>
 	<script>
-		// TODO
-		// ajax
-		function get_verification(){
-			var path = "/verify?email=" + document.getElementById("your-email").value;
-			$("#code").attr("href", path);
-		}
+		$("#code").click(function () {
+			$.ajax({
+				url: "/verify?email=" + document.getElementById("your-email").value,
+				type: "get",
+				success: function (data){
+					console.log(data);
+					if (data.emailMsg != null || data.emailMsg == ""){
+						$("#your-email").attr("class", "form-control is-invalid");
+						document.querySelector("#email-feedback").textContent = data.emailMsg;
+					}else{
+						document.querySelector("#code").textContent = "验证码已发送";
+					}
+				}
+			})
+		});
+		// function get_verification(){
+		// 	var path = "/verify?email=" + document.getElementById("your-email").value;
+		// 	$("#code").attr("href", path).click();
+		// }
 	</script>
 </body>
 </html>

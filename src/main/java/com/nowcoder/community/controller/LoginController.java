@@ -21,6 +21,7 @@ import javax.servlet.http.HttpSession;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.HashMap;
 import java.util.Map;
 
 @Controller
@@ -67,18 +68,29 @@ public class LoginController implements Constant {
     }
 
     @GetMapping("/verify")
-    public String sendVerification(Model model, @RequestParam(defaultValue = "",value = "email") String email, HttpSession session){
+    @ResponseBody
+    public Map<String, Object> sendVerification(Model model, @RequestParam(defaultValue = "",value = "email") String email, HttpSession session){
         // 生成验证码
         String code = CodeUtil.generateUUID().substring(0, 6);
         Map<String, Object> map = userService.verify(email, code);
         if (map == null || map.isEmpty()){
             session.setAttribute("code", code);
             session.setAttribute("email", email);
+            return new HashMap<String, Object>(){
+                {
+                    put("email", email);
+                }
+            };
         }else{
             model.addAttribute("emailMsg", map.get("emailMsg"));
+            return new HashMap<String, Object>(){
+                {
+                    put("email", email);
+                    put("emailMsg",map.get("emailMsg"));
+                }
+            };
         }
-        model.addAttribute("email", email);
-        return "/site/forget";
+//        model.addAttribute("email", email);
     }
 
     @PostMapping("/forget")
