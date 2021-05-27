@@ -10,10 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
@@ -101,6 +98,22 @@ public class UserController {
         } catch (IOException e) {
             log.error("读取头像失败：" + e.getMessage());
         }
+    }
+
+    @PostMapping("/update")
+    public String updatePassword(String oldPassword, String newPassword, Model model){
+        User user = hostHolder.getUser();
+        oldPassword = CodeUtil.md5(oldPassword + user.getSalt());
+        if (!user.getPassword().equals(oldPassword)){
+            model.addAttribute("pwdError","原密码输入错误！");
+            return "/site/setting";
+        }
+        newPassword = CodeUtil.md5(newPassword + user.getSalt());
+        if (userService.updatePassword(user.getId(), newPassword) != 1){
+            log.error("用户：" + user.getId() + "，更新密码失败");
+            throw new RuntimeException("更新密码失败，服务器发生异常！");
+        }
+        return "redirect:/index";
     }
 
 }

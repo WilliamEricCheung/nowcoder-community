@@ -245,6 +245,12 @@ public class UserServiceImpl implements UserService, Constant {
         return userMapper.update(user, updateWrapper);
     }
 
+    /**
+     * 更新密码
+     * @param id 用户id
+     * @param password 已经加密过后的密码
+     * @return 是否成功
+     */
     @Override
     public int updatePassword(int id, String password) {
         User user = findUserById(id);
