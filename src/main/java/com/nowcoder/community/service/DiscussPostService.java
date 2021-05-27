@@ -6,4 +6,5 @@ import java.util.List;
 
 public interface DiscussPostService {
     List<DiscussPost> findDiscussPosts(int userId);
+    int addDiscussPost(DiscussPost post);
 }

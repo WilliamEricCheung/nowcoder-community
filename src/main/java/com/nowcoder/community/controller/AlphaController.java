@@ -1,11 +1,12 @@
 package com.nowcoder.community.controller;
 
 import com.nowcoder.community.service.AlphaService;
-import com.nowcoder.community.util.CodeUtil;
+import com.nowcoder.community.util.ProjectUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import javax.annotation.PostConstruct;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -111,7 +112,7 @@ public class AlphaController {
     @ResponseBody
     public String setCookie(HttpServletResponse response) {
         // 创建cookie
-        Cookie cookie = new Cookie("code", CodeUtil.generateUUID());
+        Cookie cookie = new Cookie("code", ProjectUtil.generateUUID());
         // 设置cookie生效范围
         cookie.setPath("/");
         // 设置cookie生存时间
@@ -143,5 +144,14 @@ public class AlphaController {
     public String getSession(HttpSession session){
         System.out.println(session.getAttribute("name"));
         return "get session";
+    }
+
+    // ajax 示例
+    @PostMapping("/ajax")
+    @ResponseBody
+    public String testAjax(String name, int age){
+        System.out.println(name);
+        System.out.println(age);
+        return ProjectUtil.getJSONString(0, "操作成功");
     }
 }

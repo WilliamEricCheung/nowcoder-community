@@ -7,13 +7,13 @@ import java.util.Map;
 
 public interface UserService {
 
-    public Map<String, Object> register(User user);
-    public int activation(int userId, String code);
-    public Map<String, Object> verify(String email, String code);
-    public int resetPassword(String email,String password);
-    public Map<String, Object> login(String username, String password, int expiredSeconds);
-    public void logout(String ticket);
-    public LoginTicket findLoginTicket(String ticket);
+    Map<String, Object> register(User user);
+    int activation(int userId, String code);
+    Map<String, Object> verify(String email, String code);
+    int resetPassword(String email, String password);
+    Map<String, Object> login(String username, String password, int expiredSeconds);
+    void logout(String ticket);
+    LoginTicket findLoginTicket(String ticket);
 
     User findUserById(int id);
     User findUserByName(String name);

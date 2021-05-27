@@ -3,7 +3,7 @@ package com.nowcoder.community.controller;
 import com.nowcoder.community.annotation.LoginRequired;
 import com.nowcoder.community.entity.User;
 import com.nowcoder.community.service.UserService;
-import com.nowcoder.community.util.CodeUtil;
+import com.nowcoder.community.util.ProjectUtil;
 import com.nowcoder.community.util.HostHolder;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -61,7 +61,7 @@ public class UserController {
         }
 
         // 生成随机的文件名
-        fileName = CodeUtil.generateUUID() + suffix;
+        fileName = ProjectUtil.generateUUID() + suffix;
         // 确定文件存放的路径
         File dest = new File(uploadPath + "/" + fileName);
         try {
@@ -106,12 +106,12 @@ public class UserController {
     @PostMapping("/update")
     public String updatePassword(String oldPassword, String newPassword, Model model){
         User user = hostHolder.getUser();
-        oldPassword = CodeUtil.md5(oldPassword + user.getSalt());
+        oldPassword = ProjectUtil.md5(oldPassword + user.getSalt());
         if (!user.getPassword().equals(oldPassword)){
             model.addAttribute("pwdError","原密码输入错误！");
             return "/site/setting";
         }
-        newPassword = CodeUtil.md5(newPassword + user.getSalt());
+        newPassword = ProjectUtil.md5(newPassword + user.getSalt());
         if (userService.updatePassword(user.getId(), newPassword) != 1){
             log.error("用户：" + user.getId() + "，更新密码失败");
             throw new RuntimeException("更新密码失败，服务器发生异常！");

@@ -3,7 +3,7 @@ package com.nowcoder.community.controller;
 import com.google.code.kaptcha.Producer;
 import com.nowcoder.community.entity.User;
 import com.nowcoder.community.service.UserService;
-import com.nowcoder.community.util.CodeUtil;
+import com.nowcoder.community.util.ProjectUtil;
 import com.nowcoder.community.util.Constant;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -71,7 +71,7 @@ public class LoginController implements Constant {
     @ResponseBody
     public Map<String, Object> sendVerification(Model model, @RequestParam(defaultValue = "",value = "email") String email, HttpSession session){
         // 生成验证码
-        String code = CodeUtil.generateUUID().substring(0, 6);
+        String code = ProjectUtil.generateUUID().substring(0, 6);
         Map<String, Object> map = userService.verify(email, code);
         if (map == null || map.isEmpty()){
             session.setAttribute("code", code);
