@@ -195,6 +195,13 @@ public class UserServiceImpl implements UserService, Constant {
     }
 
     @Override
+    public LoginTicket findLoginTicket(String ticket) {
+        QueryWrapper<LoginTicket> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("ticket", ticket);
+        return loginTicketMapper.selectOne(queryWrapper);
+    }
+
+    @Override
     public User findUserById(int id) {
         QueryWrapper<User> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("id", id);

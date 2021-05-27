@@ -13,6 +13,7 @@ public interface UserService {
     public int resetPassword(String email,String password);
     public Map<String, Object> login(String username, String password, int expiredSeconds);
     public void logout(String ticket);
+    public LoginTicket findLoginTicket(String ticket);
 
     User findUserById(int id);
     User findUserByName(String name);
