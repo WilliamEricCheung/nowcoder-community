@@ -33,6 +33,11 @@ public class DiscussPostServiceImpl implements DiscussPostService {
     }
 
     @Override
+    public DiscussPost findDiscussPostById(int id) {
+        return discussPostMapper.selectById(id);
+    }
+
+    @Override
     public int addDiscussPost(DiscussPost post) {
         if (post == null){
             throw new IllegalArgumentException("参数不能为空");
