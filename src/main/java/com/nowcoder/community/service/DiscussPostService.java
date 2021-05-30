@@ -8,4 +8,5 @@ public interface DiscussPostService {
     List<DiscussPost> findDiscussPosts(int userId);
     DiscussPost findDiscussPostById(int id);
     int addDiscussPost(DiscussPost post);
+    int updateCommentCount(int id, int commentCount);
 }

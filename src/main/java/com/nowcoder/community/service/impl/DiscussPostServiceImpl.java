@@ -1,6 +1,7 @@
 package com.nowcoder.community.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.nowcoder.community.entity.DiscussPost;
 import com.nowcoder.community.mapper.DiscussPostMapper;
 import com.nowcoder.community.service.DiscussPostService;
@@ -49,5 +50,14 @@ public class DiscussPostServiceImpl implements DiscussPostService {
         post.setTitle(filter.filter(post.getTitle()));
         post.setContent(filter.filter(post.getContent()));
         return discussPostMapper.insert(post);
+    }
+
+    @Override
+    public int updateCommentCount(int id, int commentCount) {
+        DiscussPost post = findDiscussPostById(id);
+        UpdateWrapper<DiscussPost> updateWrapper = new UpdateWrapper<>();
+        updateWrapper.eq("id", id);
+        updateWrapper.set("comment_count", commentCount);
+        return discussPostMapper.update(post, updateWrapper);
     }
 }
