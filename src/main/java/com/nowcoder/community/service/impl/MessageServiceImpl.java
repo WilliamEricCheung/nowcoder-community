@@ -133,4 +133,13 @@ public class MessageServiceImpl implements MessageService {
     public int readMessage(List<Integer> ids) {
         return messageMapper.updateMessage(ids, 1);
     }
+
+    @Override
+    public int deleteMessage(int id) {
+        UpdateWrapper<Message> updateWrapper = new UpdateWrapper<>();
+        Message message = messageMapper.selectById(id);
+        updateWrapper.eq("id", id);
+        updateWrapper.set("status", 2);
+        return messageMapper.update(message, updateWrapper);
+    }
 }

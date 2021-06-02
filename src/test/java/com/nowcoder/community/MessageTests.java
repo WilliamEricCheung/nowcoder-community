@@ -33,4 +33,9 @@ public class MessageTests {
         int unread = messageService.getLetterUnreadCount(131,"111_131");
         System.out.println(unread);
     }
+
+    @Test
+    public void testDeleteMsg(){
+        System.out.println(messageService.deleteMessage(1));
+    }
 }

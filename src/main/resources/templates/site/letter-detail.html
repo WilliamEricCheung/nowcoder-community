@@ -120,11 +120,11 @@
 						<a href="profile.html">
 							<img th:src="${map.fromUser.headerUrl}" class="mr-4 rounded-circle user-header" alt="用户头像" >
 						</a>
-						<div class="toast show d-lg-block" role="alert" aria-live="assertive" aria-atomic="true">
+						<div class="toast show d-lg-block" role="alert" aria-live="assertive" aria-atomic="true" id="letterId" th:value="${map.letter.id}">
 							<div class="toast-header">
 								<strong class="mr-auto" th:utext="${map.fromUser.username}">落基山脉下的闲人</strong>
 								<small th:text="${#dates.format(map.letter.createTime, 'yyyy-MM-dd HH:mm:ss')}">2019-04-25 15:49:32</small>
-								<button type="button" class="ml-2 mb-1 close" data-dismiss="toast" aria-label="Close">
+								<button type="button" id="deleteMsg" class="ml-2 mb-1 close" data-dismiss="toast" aria-label="Close">
 									<span aria-hidden="true">&times;</span>
 								</button>
 							</div>

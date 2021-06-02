@@ -24,4 +24,6 @@ public interface MessageService {
     // 修改消息的状态
     int readMessage(List<Integer> ids);
 
+    int deleteMessage(int id);
+
 }
