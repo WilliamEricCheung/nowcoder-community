@@ -15,4 +15,7 @@ public interface MessageService {
     // 查询未读私信的数量
     int getLetterUnreadCount(int userId, String conversationId);
 
+    // 查询某个会话包含的私信数量
+    int getLetterCount(String conversationId);
+
 }
