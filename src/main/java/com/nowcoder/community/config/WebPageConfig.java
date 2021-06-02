@@ -13,7 +13,7 @@ import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Configuration
-public class WebPageConfig implements WebMvcConfigurer, ErrorPageRegistrar {
+public class WebPageConfig implements WebMvcConfigurer{
 
     @Autowired
     private LoginTicketInterceptor loginTicketInterceptor;
@@ -43,10 +43,4 @@ public class WebPageConfig implements WebMvcConfigurer, ErrorPageRegistrar {
                 .excludePathPatterns("/css/**","/js/**","/img/**");
     }
 
-    @Override
-    public void registerErrorPages(ErrorPageRegistry registry) {
-        ErrorPage errorPage404 = new ErrorPage(HttpStatus.NOT_FOUND, "/error/404");
-        ErrorPage errorPage500 = new ErrorPage(HttpStatus.INTERNAL_SERVER_ERROR, "/error/500");
-        registry.addErrorPages(errorPage404, errorPage500);
-    }
 }
