@@ -1,12 +1,15 @@
 package com.nowcoder.community.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.nowcoder.community.entity.Message;
 import com.nowcoder.community.mapper.MessageMapper;
 import com.nowcoder.community.service.MessageService;
+import com.nowcoder.community.util.SensitiveFilter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.util.HtmlUtils;
 
 import java.util.List;
 
@@ -16,6 +19,9 @@ public class MessageServiceImpl implements MessageService {
 
     @Autowired
     private MessageMapper messageMapper;
+
+    @Autowired
+    private SensitiveFilter sensitiveFilter;
 
     /**
      * select *
@@ -38,7 +44,7 @@ public class MessageServiceImpl implements MessageService {
         String inString = String.format("select max(id) from message " +
                 "where status != 2 and from_id != 1 and (from_id = %d or to_id = %d) group by conversation_id", userId, userId);
         queryWrapper.inSql("id", inString);
-        queryWrapper.groupBy("id").orderByDesc();
+        queryWrapper.groupBy("conversation_id").orderByDesc("id");
         return messageMapper.selectList(queryWrapper);
     }
 
@@ -104,5 +110,27 @@ public class MessageServiceImpl implements MessageService {
                 .ne("from_id", 1)
                 .eq("conversation_id", conversationId);
         return messageMapper.selectCount(queryWrapper.select("id"));
+    }
+
+    @Override
+    public int addMessage(Message message) {
+        message.setContent(HtmlUtils.htmlEscape(message.getContent()));
+        message.setContent(sensitiveFilter.filter(message.getContent()));
+        return messageMapper.insert(message);
+    }
+
+    /**
+     * update message
+     * set status = #{status}
+     * where id in
+     * <foreach collection="ids" item="id" open="(" separator="," close=")">
+     *      #{id}
+     * </foreach>
+     * @param ids
+     * @return
+     */
+    @Override
+    public int readMessage(List<Integer> ids) {
+        return messageMapper.updateMessage(ids, 1);
     }
 }

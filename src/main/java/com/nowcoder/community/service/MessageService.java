@@ -18,4 +18,10 @@ public interface MessageService {
     // 查询某个会话包含的私信数量
     int getLetterCount(String conversationId);
 
+    // 新增消息
+    int addMessage(Message message);
+
+    // 修改消息的状态
+    int readMessage(List<Integer> ids);
+
 }
