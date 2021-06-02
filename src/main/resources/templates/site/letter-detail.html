@@ -138,18 +138,18 @@
 				<nav class="mt-5" th:if="${letters.total>0}">
 					<ul class="pagination justify-content-center">
 						<li class="page-item">
-							<a class="page-link" th:href="@{|/letter/detail/${conversationId}|}">首页</a>
+							<a class="page-link" th:href="@{'/letter/detail/'+${conversationId}}">首页</a>
 						</li>
 						<li th:class="|page-item ${letters.pageNum==1?'disabled':''}|">
-							<a class="page-link" th:href="@{|/letter/detail/${conversationId}(pageNum=${letters.hasPreviousPage}?${letters.prePage}:1)|}">上一页</a></li>
+							<a class="page-link" th:href="@{'/letter/detail/'+${conversationId}(pageNum=${letters.hasPreviousPage}?${letters.prePage}:1)}">上一页</a></li>
 						<li th:class="|page-item ${i==letters.pageNum?'active':''}|" th:each="i:${#numbers.sequence(letters.getNavigateFirstPage(),letters.getNavigateLastPage())}">
-							<a class="page-link" th:href="@{|/letter/detail/${conversationId}(pageNum=${i})|}" th:text="${i}">1</a>
+							<a class="page-link" th:href="@{'/letter/detail/'+${conversationId}(pageNum=${i})}" th:text="${i}">1</a>
 						</li>
 						<li th:class="|page-item ${letters.pageNum==letters.pages?'disabled':''}|">
-							<a class="page-link" th:href="@{|/letter/detail/${conversationId}(pageNum=${letters.hasNextPage}?${letters.nextPage}:${letters.pages})|}">下一页</a>
+							<a class="page-link" th:href="@{'/letter/detail/'+${conversationId}(pageNum=${letters.hasNextPage}?${letters.nextPage}:${letters.pages})}">下一页</a>
 						</li>
 						<li class="page-item">
-							<a class="page-link" th:href="@{|/letter/detail/${conversationId}(pageNum=${letters.pages})|}">末页</a>
+							<a class="page-link" th:href="@{'/letter/detail/'+${conversationId}(pageNum=${letters.pages})}">末页</a>
 						</li>
 					</ul>
 				</nav>

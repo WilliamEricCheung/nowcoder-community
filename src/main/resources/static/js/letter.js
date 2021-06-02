@@ -33,7 +33,8 @@ function send_letter() {
 
 function delete_msg() {
     // TODO 删除数据
-    var id = $("#letterId").val();
+    var id = $("#letterId").attr("value");
+    console.log(id);
     $.post(
         CONTEXT_PATH + "letter/delete",
         {

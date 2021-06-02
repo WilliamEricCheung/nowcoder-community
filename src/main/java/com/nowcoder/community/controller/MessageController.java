@@ -133,4 +133,15 @@ public class MessageController {
 
         return ProjectUtil.getJSONString(0);
     }
+
+    @PostMapping("/letter/delete")
+    @ResponseBody
+    public String deleteLetter(String id){
+        int result = messageService.deleteMessage(Integer.parseInt(id));
+        if (result == 1) {
+            return ProjectUtil.getJSONString(0);
+        }else{
+            return ProjectUtil.getJSONString(1, "删除失败！");
+        }
+    }
 }
