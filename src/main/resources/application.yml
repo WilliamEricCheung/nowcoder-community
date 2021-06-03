@@ -45,6 +45,11 @@ spring:
           starttls:
             enable: true
             required: true
+  # RedisProperties
+  redis:
+    database: 11
+    host: localhost
+    port: 6379
 
 server:
   tomcat:
