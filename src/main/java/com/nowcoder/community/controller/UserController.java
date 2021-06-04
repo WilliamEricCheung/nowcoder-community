@@ -1,11 +1,15 @@
 package com.nowcoder.community.controller;
 
+import com.github.pagehelper.PageInfo;
 import com.nowcoder.community.annotation.LoginRequired;
+import com.nowcoder.community.entity.DiscussPost;
 import com.nowcoder.community.entity.User;
+import com.nowcoder.community.service.DiscussPostService;
 import com.nowcoder.community.service.FollowService;
 import com.nowcoder.community.service.LikeService;
 import com.nowcoder.community.service.UserService;
 import com.nowcoder.community.util.Constant;
+import com.nowcoder.community.util.PageUtil;
 import com.nowcoder.community.util.ProjectUtil;
 import com.nowcoder.community.util.HostHolder;
 import lombok.extern.slf4j.Slf4j;
@@ -22,6 +26,10 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @Controller
 @Slf4j
@@ -30,22 +38,18 @@ public class UserController implements Constant {
 
     @Autowired
     private UserService userService;
-
     @Autowired
     private HostHolder hostHolder;
-
     @Autowired
     private LikeService likeService;
-
     @Autowired
     private FollowService followService;
-
+    @Autowired
+    private DiscussPostService discussPostService;
     @Value("${community.path.upload}")
     private String uploadPath;
-
     @Value("${community.path.domain}")
     private String domain;
-
     @Value("${server.servlet.context-path}")
     private String contextPath;
 
@@ -113,15 +117,15 @@ public class UserController implements Constant {
     }
 
     @PostMapping("/update")
-    public String updatePassword(String oldPassword, String newPassword, Model model){
+    public String updatePassword(String oldPassword, String newPassword, Model model) {
         User user = hostHolder.getUser();
         oldPassword = ProjectUtil.md5(oldPassword + user.getSalt());
-        if (!user.getPassword().equals(oldPassword)){
-            model.addAttribute("pwdError","原密码输入错误！");
+        if (!user.getPassword().equals(oldPassword)) {
+            model.addAttribute("pwdError", "原密码输入错误！");
             return "/site/setting";
         }
         newPassword = ProjectUtil.md5(newPassword + user.getSalt());
-        if (userService.updatePassword(user.getId(), newPassword) != 1){
+        if (userService.updatePassword(user.getId(), newPassword) != 1) {
             log.error("用户：" + user.getId() + "，更新密码失败");
             throw new RuntimeException("更新密码失败，服务器发生异常！");
         }
@@ -129,9 +133,9 @@ public class UserController implements Constant {
     }
 
     @GetMapping("/profile/{userId}")
-    public String getProfilePage(@PathVariable("userId") int userId, Model model){
+    public String getProfilePage(@PathVariable("userId") int userId, Model model) {
         User user = userService.findUserById(userId);
-        if (user == null){
+        if (user == null) {
             throw new RuntimeException("该用户不存在！");
         }
 
@@ -148,11 +152,36 @@ public class UserController implements Constant {
         model.addAttribute("followerCount", followerCount);
         // 是否已关注
         boolean hasFollowed = false;
-        if (hostHolder.getUser() != null){
+        if (hostHolder.getUser() != null) {
             hasFollowed = followService.hasFollowed(hostHolder.getUser().getId(), ENTITY_TYPE_USER, userId);
         }
         model.addAttribute("hasFollowed", hasFollowed);
 
         return "/site/profile";
+    }
+
+    @GetMapping("/posts")
+    public String getPosts(Model model,
+                           @RequestParam(defaultValue = "1", value = "pageNum") Integer pageNum) {
+        User user = hostHolder.getUser();
+        if (user == null) {
+            throw new RuntimeException("该用户不存在！");
+        }
+        model.addAttribute("user", user);
+        List<Map<String, Object>> list = new ArrayList<>();
+        List<DiscussPost> postList = discussPostService.findDiscussPosts(user.getId());
+        if (postList != null) {
+            model.addAttribute("postNum", postList.size());
+            for (DiscussPost post : postList) {
+                Map<String, Object> map = new HashMap<>();
+                map.put("post", post);
+                long likeCount = likeService.findEntityLikeCount(ENTITY_TYPE_POST, post.getId());
+                map.put("likeCount", likeCount);
+                list.add(map);
+            }
+        }
+        PageInfo<Map<String, Object>> pageInfo = PageUtil.startPage(list, pageNum, 5);
+        model.addAttribute("posts", pageInfo);
+        return "/site/my-post";
     }
 }

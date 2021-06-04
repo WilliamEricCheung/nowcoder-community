@@ -12,6 +12,6 @@ public interface LikeService {
     int findEntityLikeStatus(int userId, int entityType, int entityId);
 
     // 查询某个用户获得的赞
-    public int findUserLikeCount(int userId);
+    int findUserLikeCount(int userId);
 
 }
