@@ -7,6 +7,7 @@ public class RedisKeyUtil {
     private static final String PREFIX_USER_LIKE = "like:user";
     private static final String PREFIX_FOLLOWEE = "followee";
     private static final String PREFIX_FOLLOWER = "follower";
+    private static final String PREFIX_USER_COMMENT = "comment:user";
 
     // 某个实体的赞
     // like:entity:entityType:entityId -> set(userId)

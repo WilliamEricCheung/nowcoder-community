@@ -23,10 +23,8 @@ public class CommentServiceImpl implements CommentService, Constant {
 
     @Autowired
     private CommentMapper commentMapper;
-
     @Autowired
     private SensitiveFilter sensitiveFilter;
-
     @Autowired
     private DiscussPostService discussPostService;
 
@@ -68,5 +66,24 @@ public class CommentServiceImpl implements CommentService, Constant {
         }
 
         return rows;
+    }
+
+    @Override
+    public List<Comment> findCommentsByEntityAndUserId(int entityType, int userId) {
+        QueryWrapper<Comment> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("entity_type", entityType)
+                .eq("user_id", userId)
+                .eq("status", 0)
+                .orderByDesc("create_time");
+        return commentMapper.selectList(queryWrapper);
+    }
+
+    @Override
+    public int findCommentCountByUser(int entityType, int userId) {
+        QueryWrapper<Comment> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("entity_type", entityType)
+                .eq("user_id", userId)
+                .eq("status", 0);
+        return commentMapper.selectCount(queryWrapper.select("id"));
     }
 }

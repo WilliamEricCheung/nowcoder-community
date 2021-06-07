@@ -2,12 +2,10 @@ package com.nowcoder.community.controller;
 
 import com.github.pagehelper.PageInfo;
 import com.nowcoder.community.annotation.LoginRequired;
+import com.nowcoder.community.entity.Comment;
 import com.nowcoder.community.entity.DiscussPost;
 import com.nowcoder.community.entity.User;
-import com.nowcoder.community.service.DiscussPostService;
-import com.nowcoder.community.service.FollowService;
-import com.nowcoder.community.service.LikeService;
-import com.nowcoder.community.service.UserService;
+import com.nowcoder.community.service.*;
 import com.nowcoder.community.util.Constant;
 import com.nowcoder.community.util.PageUtil;
 import com.nowcoder.community.util.ProjectUtil;
@@ -46,6 +44,9 @@ public class UserController implements Constant {
     private FollowService followService;
     @Autowired
     private DiscussPostService discussPostService;
+    @Autowired
+    private CommentService commentService;
+
     @Value("${community.path.upload}")
     private String uploadPath;
     @Value("${community.path.domain}")
@@ -170,7 +171,7 @@ public class UserController implements Constant {
         model.addAttribute("user", user);
         List<Map<String, Object>> list = new ArrayList<>();
         List<DiscussPost> postList = discussPostService.findDiscussPosts(user.getId());
-        if (postList != null) {
+        if (postList.size() > 0) {
             model.addAttribute("postNum", postList.size());
             for (DiscussPost post : postList) {
                 Map<String, Object> map = new HashMap<>();
@@ -183,5 +184,32 @@ public class UserController implements Constant {
         PageInfo<Map<String, Object>> pageInfo = PageUtil.startPage(list, pageNum, 5);
         model.addAttribute("posts", pageInfo);
         return "/site/my-post";
+    }
+
+    @GetMapping("/replys")
+    public String getPostReply(Model model,
+                               @RequestParam(defaultValue = "1", value = "pageNum") Integer pageNum){
+        User user = hostHolder.getUser();
+        if (user == null) {
+            throw new RuntimeException("该用户不存在！");
+        }
+        model.addAttribute("user", user);
+        List<Map<String, Object>> list = new ArrayList<>();
+        List<Comment> commentList = commentService.findCommentsByEntityAndUserId(ENTITY_TYPE_POST, user.getId());
+        int count = commentService.findCommentCountByUser(ENTITY_TYPE_POST, user.getId());
+        model.addAttribute("count", count);
+        if (commentList.size() > 0){
+            for (Comment comment: commentList){
+                Map<String, Object> map = new HashMap<>();
+                map.put("comment", comment);
+                DiscussPost post = discussPostService.findDiscussPostById(comment.getEntityId());
+                map.put("post", post);
+                list.add(map);
+            }
+        }
+        PageInfo<Map<String, Object>> pageInfo = PageUtil.startPage(list, pageNum, 5);
+        model.addAttribute("replys", pageInfo);
+
+        return "/site/my-reply";
     }
 }

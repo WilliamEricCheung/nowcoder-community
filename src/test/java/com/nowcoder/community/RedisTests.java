@@ -1,5 +1,6 @@
 package com.nowcoder.community;
 
+import com.nowcoder.community.util.RedisKeyUtil;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
