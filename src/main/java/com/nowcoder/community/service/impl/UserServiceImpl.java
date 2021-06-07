@@ -10,10 +10,12 @@ import com.nowcoder.community.service.UserService;
 import com.nowcoder.community.util.ProjectUtil;
 import com.nowcoder.community.util.Constant;
 import com.nowcoder.community.util.MailClient;
+import com.nowcoder.community.util.RedisKeyUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
@@ -22,6 +24,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
+import java.util.concurrent.TimeUnit;
 
 @Slf4j
 @Service
@@ -29,12 +32,12 @@ public class UserServiceImpl implements UserService, Constant {
 
     @Autowired
     private UserMapper userMapper;
-
     @Autowired
     private MailClient mailClient;
-
     @Autowired
     private TemplateEngine templateEngine;
+    @Autowired
+    private RedisTemplate redisTemplate;
 
     @Value("${community.path.domain}")
     private String domain;
@@ -42,8 +45,8 @@ public class UserServiceImpl implements UserService, Constant {
     @Value("${server.servlet.context-path}")
     private String contextPath;
 
-    @Autowired
-    private LoginTicketMapper loginTicketMapper;
+//    @Autowired
+//    private LoginTicketMapper loginTicketMapper;
 
     @Override
     public Map<String, Object> register(User user) {
@@ -107,6 +110,7 @@ public class UserServiceImpl implements UserService, Constant {
             return ACTIVATION_REPEAT;
         }else if (user.getActivationCode().equals(code)){
             updateStatus(userId, 1);
+            clearCache(userId);
             return ACTIVATION_SUCCESS;
         }else{
             return ACTIVATION_FAILURE;
@@ -181,7 +185,9 @@ public class UserServiceImpl implements UserService, Constant {
         loginTicket.setTicket(ProjectUtil.generateUUID());
         loginTicket.setStatus(0);
         loginTicket.setExpired(new Date(System.currentTimeMillis() + expiredSeconds * 1000L));
-        insertLoginTicket(loginTicket);
+//        insertLoginTicket(loginTicket);
+        String redisKey = RedisKeyUtil.getTicketKey(loginTicket.getTicket());
+        redisTemplate.opsForValue().set(redisKey, loginTicket);
 
         map.put("ticket", loginTicket.getTicket());
         return map;
@@ -189,21 +195,32 @@ public class UserServiceImpl implements UserService, Constant {
 
     @Override
     public void logout(String ticket) {
-        updateStatus(ticket, 1);
+//        updateStatus(ticket, 1);
+        String redisKey = RedisKeyUtil.getTicketKey(ticket);
+        LoginTicket loginTicket = (LoginTicket) redisTemplate.opsForValue().get(redisKey);
+        loginTicket.setStatus(1);
+        redisTemplate.opsForValue().set(redisKey, loginTicket);
     }
 
     @Override
     public LoginTicket findLoginTicket(String ticket) {
-        QueryWrapper<LoginTicket> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("ticket", ticket);
-        return loginTicketMapper.selectOne(queryWrapper);
+//        QueryWrapper<LoginTicket> queryWrapper = new QueryWrapper<>();
+//        queryWrapper.eq("ticket", ticket);
+//        return loginTicketMapper.selectOne(queryWrapper);
+        String redisKey = RedisKeyUtil.getTicketKey(ticket);
+        return (LoginTicket) redisTemplate.opsForValue().get(redisKey);
     }
 
     @Override
     public User findUserById(int id) {
-        QueryWrapper<User> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("id", id);
-        return userMapper.selectOne(queryWrapper);
+//        QueryWrapper<User> queryWrapper = new QueryWrapper<>();
+//        queryWrapper.eq("id", id);
+//        return userMapper.selectOne(queryWrapper);
+        User user = getCache(id);
+        if (user == null){
+            user = initCahce(id);
+        }
+        return user;
     }
 
     @Override
@@ -231,7 +248,9 @@ public class UserServiceImpl implements UserService, Constant {
         UpdateWrapper<User> updateWrapper = new UpdateWrapper<>();
         updateWrapper.eq("id", id);
         user.setStatus(status);
-        return userMapper.update(user, updateWrapper);
+        int rows = userMapper.update(user, updateWrapper);
+        clearCache(id);
+        return rows;
     }
 
     @Override
@@ -240,7 +259,10 @@ public class UserServiceImpl implements UserService, Constant {
         UpdateWrapper<User> updateWrapper = new UpdateWrapper<>();
         updateWrapper.eq("id", id);
         user.setHeaderUrl(header);
-        return userMapper.update(user, updateWrapper);
+//        return userMapper.update(user, updateWrapper);
+        int rows = userMapper.update(user, updateWrapper);
+        clearCache(id);
+        return rows;
     }
 
     /**
@@ -255,27 +277,49 @@ public class UserServiceImpl implements UserService, Constant {
         UpdateWrapper<User> updateWrapper = new UpdateWrapper<>();
         updateWrapper.eq("id", id);
         user.setPassword(password);
-        return userMapper.update(user, updateWrapper);
+        int rows = userMapper.update(user, updateWrapper);
+        clearCache(id);
+        return rows;
     }
 
-    @Override
-    public int insertLoginTicket(LoginTicket loginTicket) {
-        return loginTicketMapper.insert(loginTicket);
+
+    // 1.优先从缓存中取值
+    private User getCache(int userId){
+        String redisKey = RedisKeyUtil.getUserKey(userId);
+        return (User) redisTemplate.opsForValue().get(redisKey);
     }
 
-    @Override
-    public LoginTicket selectByTicket(String ticket) {
-        QueryWrapper<LoginTicket> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("ticket", ticket);
-        return loginTicketMapper.selectOne(queryWrapper);
+    // 2.取不到时初始化缓存数据
+    private User initCahce(int userId){
+        User user = userMapper.selectById(userId);
+        String redisKey = RedisKeyUtil.getUserKey(userId);
+        redisTemplate.opsForValue().set(redisKey, user, 3600, TimeUnit.SECONDS);
+        return user;
+    }
+    // 3.数据变更时清除缓存数据
+    private void clearCache(int userId){
+        String redisKey = RedisKeyUtil.getUserKey(userId);
+        redisTemplate.delete(redisKey);
     }
 
-    @Override
-    public int updateStatus(String ticket, int status) {
-        LoginTicket loginTicket = selectByTicket(ticket);
-        UpdateWrapper<LoginTicket> updateWrapper = new UpdateWrapper<>();
-        updateWrapper.eq("ticket", ticket);
-        updateWrapper.set("status", status);
-        return loginTicketMapper.update(loginTicket, updateWrapper);
-    }
+//    @Override
+//    public int insertLoginTicket(LoginTicket loginTicket) {
+//        return loginTicketMapper.insert(loginTicket);
+//    }
+
+//    @Override
+//    public LoginTicket selectByTicket(String ticket) {
+//        QueryWrapper<LoginTicket> queryWrapper = new QueryWrapper<>();
+//        queryWrapper.eq("ticket", ticket);
+//        return loginTicketMapper.selectOne(queryWrapper);
+//    }
+
+//    @Override
+//    public int updateStatus(String ticket, int status) {
+//        LoginTicket loginTicket = selectByTicket(ticket);
+//        UpdateWrapper<LoginTicket> updateWrapper = new UpdateWrapper<>();
+//        updateWrapper.eq("ticket", ticket);
+//        updateWrapper.set("status", status);
+//        return loginTicketMapper.update(loginTicket, updateWrapper);
+//    }
 }

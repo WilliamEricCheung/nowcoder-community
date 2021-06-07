@@ -22,7 +22,7 @@ public interface UserService {
     int updateStatus(int id, int status);
     int updateHeader(int id, String header);
     int updatePassword(int id, String password);
-    int insertLoginTicket(LoginTicket loginTicket);
-    LoginTicket selectByTicket(String ticket);
-    int updateStatus(String ticket, int status);
+//    int insertLoginTicket(LoginTicket loginTicket);
+//    LoginTicket selectByTicket(String ticket);
+//    int updateStatus(String ticket, int status);
 }
