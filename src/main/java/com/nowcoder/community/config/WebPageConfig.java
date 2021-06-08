@@ -2,6 +2,7 @@ package com.nowcoder.community.config;
 
 import com.nowcoder.community.interceptor.LoginRequiredInterceptor;
 import com.nowcoder.community.interceptor.LoginTicketInterceptor;
+import com.nowcoder.community.interceptor.MessageInterceptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.web.server.ErrorPage;
 import org.springframework.boot.web.server.ErrorPageRegistrar;
@@ -17,9 +18,10 @@ public class WebPageConfig implements WebMvcConfigurer{
 
     @Autowired
     private LoginTicketInterceptor loginTicketInterceptor;
-
     @Autowired
     private LoginRequiredInterceptor loginRequiredInterceptor;
+    @Autowired
+    private MessageInterceptor messageInterceptor;
 
     // 设置默认页面
     @Override
@@ -40,6 +42,8 @@ public class WebPageConfig implements WebMvcConfigurer{
         registry.addInterceptor(loginTicketInterceptor)
                 .excludePathPatterns("/css/**","/js/**","/img/**");
         registry.addInterceptor(loginRequiredInterceptor)
+                .excludePathPatterns("/css/**","/js/**","/img/**");
+        registry.addInterceptor(messageInterceptor)
                 .excludePathPatterns("/css/**","/js/**","/img/**");
     }
 

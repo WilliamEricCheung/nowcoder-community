@@ -76,8 +76,9 @@ public class MessageServiceImpl implements MessageService {
      * and from_id != 1
      * and to_id = #{userId}
      * <if test="conversationId != null">
-     *      and conversation_id = #{conversationId}
+     * and conversation_id = #{conversationId}
      * </if>
+     *
      * @param userId
      * @param conversationId
      * @return
@@ -88,7 +89,7 @@ public class MessageServiceImpl implements MessageService {
         queryWrapper.eq("status", 0)
                 .ne("from_id", 1)
                 .eq("to_id", userId);
-        if (conversationId!= null){
+        if (conversationId != null) {
             queryWrapper.eq("conversation_id", conversationId);
         }
         return messageMapper.selectCount(queryWrapper.select("id"));
@@ -100,6 +101,7 @@ public class MessageServiceImpl implements MessageService {
      * where status != 2
      * and from_id != 1
      * and conversation_id = #{conversationId}
+     *
      * @param conversationId
      * @return
      */
@@ -124,8 +126,9 @@ public class MessageServiceImpl implements MessageService {
      * set status = #{status}
      * where id in
      * <foreach collection="ids" item="id" open="(" separator="," close=")">
-     *      #{id}
+     * #{id}
      * </foreach>
+     *
      * @param ids
      * @return
      */
@@ -147,12 +150,13 @@ public class MessageServiceImpl implements MessageService {
      * select *
      * from message
      * where id in (
-     *     select max(id) from message
-     *     where status != 2
-     *     and from_id = 1
-     *     and to_id = #{userId}
-     *     and conversation_id = #{topic}
+     * select max(id) from message
+     * where status != 2
+     * and from_id = 1
+     * and to_id = #{userId}
+     * and conversation_id = #{topic}
      * )
+     *
      * @param userId
      * @param topic
      * @return
@@ -172,6 +176,7 @@ public class MessageServiceImpl implements MessageService {
      * and from_id = 1
      * and to_id = #{userId}
      * and conversation_id = #{topic}
+     *
      * @param userId
      * @param topic
      * @return
@@ -188,12 +193,13 @@ public class MessageServiceImpl implements MessageService {
 
     /**
      * select count(id) from message
-     * where status != 2
+     * where status = 0
      * and from_id = 1
      * and to_id = #{userId}
      * <if test="topic!=null">
-     *     and conversation_id = #{topic}
+     * and conversation_id = #{topic}
      * </if>
+     *
      * @param userId
      * @param topic
      * @return
@@ -201,11 +207,22 @@ public class MessageServiceImpl implements MessageService {
     @Override
     public int getNoticeUnreadCount(int userId, String topic) {
         QueryWrapper<Message> queryWrapper = new QueryWrapper<>();
-        queryWrapper.ne("status", 2)
+        queryWrapper.eq("status", 0)
                 .eq("from_id", 1)
                 .eq("to_id", userId);
         if (topic != null)
             queryWrapper.eq("conversation_id", topic);
         return messageMapper.selectCount(queryWrapper.select("id"));
+    }
+
+    @Override
+    public List<Message> findNotices(int userId, String topic) {
+        QueryWrapper<Message> queryWrapper = new QueryWrapper<>();
+        queryWrapper.ne("status", 2)
+                .eq("from_id", 1)
+                .eq("to_id", userId)
+                .eq("conversation_id", topic)
+                .orderByDesc("create_time");
+        return messageMapper.selectList(queryWrapper);
     }
 }

@@ -85,7 +85,7 @@ public class MessageController implements Constant {
         model.addAttribute("target", getLetterTarget(conversationId));
 
         // 设置已读
-        List<Integer> ids = getLetterIds(letterList);
+        List<Integer> ids = getLetterIds(pageInfo.getList(), "letter");
         if (!ids.isEmpty()){
             messageService.readMessage(ids);
         }
@@ -105,10 +105,11 @@ public class MessageController implements Constant {
         }
     }
 
-    private List<Integer> getLetterIds(List<Message> letterList){
+    private List<Integer> getLetterIds(List<Map<String,Object>> list, String messageType){
         List<Integer> ids = new ArrayList<>();
-        if (letterList != null){
-            for (Message message: letterList){
+        if (list != null) {
+            for (Map<String, Object> map : list) {
+                Message message = (Message)map.get(messageType);
                 if (hostHolder.getUser().getId() == message.getToId() && message.getStatus() == 0){
                     ids.add(message.getId());
                 }
@@ -225,5 +226,41 @@ public class MessageController implements Constant {
         model.addAttribute("noticeUnreadCount", noticeUnreadCount);
 
         return "/site/notice";
+    }
+
+    @GetMapping("/notice/detail/{topic}")
+    public String getNoticeDetail(@PathVariable("topic") String topic,Model model,
+                                  @RequestParam(defaultValue = "1", value = "pageNum") Integer pageNum){
+        User user = hostHolder.getUser();
+        List<Message> noticeList = messageService.findNotices(user.getId(), topic);
+        List<Map<String, Object>> noticeVoList = new ArrayList<>();
+        if (noticeList != null){
+            for (Message notice: noticeList){
+                Map<String, Object> map = new HashMap<>();
+                // 通知
+                map.put("notice", notice);
+                // 内容
+                String content = HtmlUtils.htmlUnescape(notice.getContent());
+                Map<String, Object> data = JSONObject.parseObject(content, HashMap.class);
+                map.put("user", userService.findUserById((Integer) data.get("userId")));
+                map.put("entityType", data.get("entityType"));
+                map.put("entityId", data.get("entityId"));
+                map.put("postId", data.get("postId"));
+                // 通知作者
+                map.put("fromUser", userService.findUserById(notice.getFromId()));
+
+                noticeVoList.add(map);
+            }
+        }
+        PageInfo<Map<String, Object>> pageInfo = PageUtil.startPage(noticeVoList, pageNum, 5);
+        model.addAttribute("notices", pageInfo);
+
+        // 设置已读
+        List<Integer> ids = getLetterIds(pageInfo.getList(), "notice");
+        if (!ids.isEmpty()){
+            messageService.readMessage(ids);
+        }
+
+        return "/site/notice-detail";
     }
 }
