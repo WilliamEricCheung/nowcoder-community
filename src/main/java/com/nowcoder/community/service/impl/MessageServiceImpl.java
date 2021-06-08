@@ -142,4 +142,70 @@ public class MessageServiceImpl implements MessageService {
         updateWrapper.set("status", 2);
         return messageMapper.update(message, updateWrapper);
     }
+
+    /**
+     * select *
+     * from message
+     * where id in (
+     *     select max(id) from message
+     *     where status != 2
+     *     and from_id = 1
+     *     and to_id = #{userId}
+     *     and conversation_id = #{topic}
+     * )
+     * @param userId
+     * @param topic
+     * @return
+     */
+    @Override
+    public Message findLatestNotice(int userId, String topic) {
+        QueryWrapper<Message> queryWrapper = new QueryWrapper<>();
+        String inString = String.format("select max(id) from message " +
+                "where status != 2 and from_id = 1 and to_id = %d and conversation_id = '%s'", userId, topic);
+        queryWrapper.inSql("id", inString);
+        return messageMapper.selectOne(queryWrapper);
+    }
+
+    /**
+     * select count(id) from message
+     * where status != 2
+     * and from_id = 1
+     * and to_id = #{userId}
+     * and conversation_id = #{topic}
+     * @param userId
+     * @param topic
+     * @return
+     */
+    @Override
+    public int getNoticeCount(int userId, String topic) {
+        QueryWrapper<Message> queryWrapper = new QueryWrapper<>();
+        queryWrapper.ne("status", 2)
+                .eq("from_id", 1)
+                .eq("to_id", userId)
+                .eq("conversation_id", topic);
+        return messageMapper.selectCount(queryWrapper.select("id"));
+    }
+
+    /**
+     * select count(id) from message
+     * where status != 2
+     * and from_id = 1
+     * and to_id = #{userId}
+     * <if test="topic!=null">
+     *     and conversation_id = #{topic}
+     * </if>
+     * @param userId
+     * @param topic
+     * @return
+     */
+    @Override
+    public int getNoticeUnreadCount(int userId, String topic) {
+        QueryWrapper<Message> queryWrapper = new QueryWrapper<>();
+        queryWrapper.ne("status", 2)
+                .eq("from_id", 1)
+                .eq("to_id", userId);
+        if (topic != null)
+            queryWrapper.eq("conversation_id", topic);
+        return messageMapper.selectCount(queryWrapper.select("id"));
+    }
 }
