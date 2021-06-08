@@ -86,4 +86,11 @@ public class CommentServiceImpl implements CommentService, Constant {
                 .eq("status", 0);
         return commentMapper.selectCount(queryWrapper.select("id"));
     }
+
+    @Override
+    public Comment findCommentById(int id) {
+        QueryWrapper<Comment> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("id", id);
+        return commentMapper.selectOne(queryWrapper);
+    }
 }
