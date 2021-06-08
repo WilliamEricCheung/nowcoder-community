@@ -3,7 +3,7 @@ package com.nowcoder.community.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.nowcoder.community.entity.DiscussPost;
-import com.nowcoder.community.mapper.DiscussPostMapper;
+import com.nowcoder.community.dao.DiscussPostMapper;
 import com.nowcoder.community.service.DiscussPostService;
 import com.nowcoder.community.util.SensitiveFilter;
 import lombok.extern.slf4j.Slf4j;

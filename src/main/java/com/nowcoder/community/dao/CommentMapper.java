@@ -1,4 +1,4 @@
-package com.nowcoder.community.mapper;
+package com.nowcoder.community.dao;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.nowcoder.community.entity.Comment;

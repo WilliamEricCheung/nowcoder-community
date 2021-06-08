@@ -2,7 +2,7 @@ package com.nowcoder.community.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.nowcoder.community.entity.Comment;
-import com.nowcoder.community.mapper.CommentMapper;
+import com.nowcoder.community.dao.CommentMapper;
 import com.nowcoder.community.service.CommentService;
 import com.nowcoder.community.service.DiscussPostService;
 import com.nowcoder.community.util.Constant;

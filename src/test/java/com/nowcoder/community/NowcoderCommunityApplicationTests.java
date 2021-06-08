@@ -1,6 +1,6 @@
 package com.nowcoder.community;
 
-import com.nowcoder.community.mapper.AlphaDAO;
+import com.nowcoder.community.dao.AlphaDAO;
 import com.nowcoder.community.service.AlphaService;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;

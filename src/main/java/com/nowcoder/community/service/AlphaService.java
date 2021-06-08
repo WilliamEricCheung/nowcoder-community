@@ -2,7 +2,7 @@ package com.nowcoder.community.service;
 
 import com.nowcoder.community.entity.DiscussPost;
 import com.nowcoder.community.entity.User;
-import com.nowcoder.community.mapper.AlphaDAO;
+import com.nowcoder.community.dao.AlphaDAO;
 import com.nowcoder.community.util.ProjectUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
