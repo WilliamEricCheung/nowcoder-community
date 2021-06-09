@@ -42,7 +42,7 @@ public class LikeController implements Constant {
         map.put("likeStatus", likeStatus);
 
         // 触发点赞事件
-        if (likeStatus == 1){
+        if (likeStatus == 1 && entityUserId != hostHolder.getUser().getId()){
             Event event = new Event()
                     .setTopic(TOPIC_LIKE)
                     .setUserId(hostHolder.getUser().getId())

@@ -67,6 +67,11 @@ public interface Constant {
     String TOPIC_LIKE = "like";
 
     /**
+     * 主题：发帖
+     */
+    String TOPIC_PUBLISH = "publish";
+
+    /**
      * 主题：关注
      */
     String TOPIC_FOLLOW = "follow";

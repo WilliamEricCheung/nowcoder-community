@@ -24,4 +24,19 @@ public class PageUtil {
         return new PageInfo<>(page);
     }
 
+    public static <T> PageInfo<T> startPage(List<T> list, Integer pageNum, Integer pageSize, Integer pageTotal) {
+        //创建Page类
+        Page page = new Page(pageNum, pageSize);
+        //为Page类中的total属性赋值
+        page.setTotal(pageTotal);
+        //计算当前需要显示的数据下标起始值
+//        int startIndex = (pageNum - 1) * pageSize;
+//        int endIndex = Math.min(startIndex + pageSize, list.size());
+        //从链表中截取需要显示的子链表，并加入到Page
+//        page.addAll(list.subList(startIndex, endIndex));
+        page.addAll(list);
+        //以Page创建PageInfo
+        return new PageInfo<>(page);
+    }
+
 }
