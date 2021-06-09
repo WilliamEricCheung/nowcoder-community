@@ -1,6 +1,6 @@
 # 开始项目 
 
-### 启动工程前
+### 启动工程前以下服务先要启动
 
 MySQL：
 * 本地用根目录下的sql初始化数据库与原始模拟数据
@@ -14,6 +14,7 @@ Kafka：
 * linux:
     1. bin/zookeeper-server-start.sh config/zookeeper.properties
     2. bin/kafka-server-start.sh config/server.properties
+  
 ElasticSearch：
   
 * [ElasticSearch安装配置](https://www.elastic.co/cn/downloads/past-releases/elasticsearch-6-4-3) (yml配置文件在project-init文件夹中)
