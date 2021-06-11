@@ -60,4 +60,22 @@ public class DiscussPostServiceImpl implements DiscussPostService {
         updateWrapper.set("comment_count", commentCount);
         return discussPostMapper.update(post, updateWrapper);
     }
+
+    @Override
+    public int updateType(int id, int type) {
+        DiscussPost post = findDiscussPostById(id);
+        UpdateWrapper<DiscussPost> updateWrapper = new UpdateWrapper<>();
+        updateWrapper.eq("id", id);
+        updateWrapper.set("type", type);
+        return discussPostMapper.update(post, updateWrapper);
+    }
+
+    @Override
+    public int updateStatus(int id, int status) {
+        DiscussPost post = findDiscussPostById(id);
+        UpdateWrapper<DiscussPost> updateWrapper = new UpdateWrapper<>();
+        updateWrapper.eq("id", id);
+        updateWrapper.set("status", status);
+        return discussPostMapper.update(post, updateWrapper);
+    }
 }
