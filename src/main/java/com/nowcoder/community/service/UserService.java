@@ -2,7 +2,9 @@ package com.nowcoder.community.service;
 
 import com.nowcoder.community.entity.LoginTicket;
 import com.nowcoder.community.entity.User;
+import org.springframework.security.core.GrantedAuthority;
 
+import java.util.Collection;
 import java.util.Map;
 
 public interface UserService {
@@ -14,6 +16,8 @@ public interface UserService {
     Map<String, Object> login(String username, String password, int expiredSeconds);
     void logout(String ticket);
     LoginTicket findLoginTicket(String ticket);
+
+    Collection<? extends GrantedAuthority> getAuthorities(int userId);
 
     User findUserById(int id);
     User findUserByName(String name);
