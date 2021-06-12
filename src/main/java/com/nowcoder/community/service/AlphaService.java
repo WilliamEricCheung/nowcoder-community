@@ -4,7 +4,10 @@ import com.nowcoder.community.entity.DiscussPost;
 import com.nowcoder.community.entity.User;
 import com.nowcoder.community.dao.AlphaDAO;
 import com.nowcoder.community.util.ProjectUtil;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.TransactionStatus;
@@ -19,6 +22,7 @@ import javax.annotation.PreDestroy;
 import java.util.Date;
 
 @Service
+@Slf4j
 //@Scope("prototype") // 默认为单例模式，prototype就变成了多例
 public class AlphaService {
 
@@ -102,5 +106,18 @@ public class AlphaService {
                 return "ok";
             }
         });
+    }
+
+    // 让该让发在多线程环境下，被异步的调用
+    @Async
+    public void execute1(){
+        log.debug("execute");
+        System.out.println("execute");
+    }
+
+    @Scheduled(initialDelay = 10000, fixedRate = 1000)
+    public void execute2(){
+        log.debug("execute2");
+        System.out.println("execute2");
     }
 }

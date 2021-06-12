@@ -1,5 +1,6 @@
 package com.nowcoder.community;
 
+import com.nowcoder.community.service.AlphaService;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -35,6 +36,9 @@ public class ThreadPoolTests {
     // Spring可执行定时任务的线程池
     @Autowired
     private ThreadPoolTaskScheduler taskScheduler;
+
+    @Autowired
+    private AlphaService alphaService;
 
     private void sleep(long m){
         try {
@@ -88,13 +92,13 @@ public class ThreadPoolTests {
                 System.out.println("Hello ThreadPoolTaskExecutor");
             }
         };
-        for (int i = 0; i < 10; i++) {
+        for (int     i = 0; i < 10; i++) {
             taskExecutor.submit(task);
         }
         sleep(10000);
     }
 
-    // 3. Spring可执行定时任务的线程池
+    // 4. Spring可执行定时任务的线程池
     @Test
     public void testThreadPoolTaskScheduler(){
         Runnable task = new Runnable() {
@@ -111,4 +115,18 @@ public class ThreadPoolTests {
         sleep(30000);
     }
 
+    // 5. Spring普通线程池（简化）
+    @Test
+    public void testThreadPoolTaskExecutorSimple(){
+        for (int i = 0; i < 10; i++) {
+            alphaService.execute1();
+        }
+        sleep(10000);
+    }
+
+    // 6. Spring定时任务线程池（简化）
+    @Test
+    public void testThreadPoolTaskSchedulerSimple() {
+        sleep(30000);
+    }
 }
