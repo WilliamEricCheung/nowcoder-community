@@ -61,7 +61,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter implements Cons
                         AUTHORITY_MODERATOR
                 )
                 .antMatchers(
-                       "/discuss/delete"
+                       "/discuss/delete",
+                        "/data/**"
                 )
                 .hasAnyAuthority(
                         AUTHORITY_ADMIN
@@ -90,7 +91,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter implements Cons
                     @Override
                     public void handle(HttpServletRequest request, HttpServletResponse response, AccessDeniedException e) throws IOException, ServletException {
                         String xRequestedWith = request.getHeader("x-requested-with");
-                        if (xRequestedWith.equals("XMLHttpRequest")) {
+                        if ("XMLHttpRequest".equals(xRequestedWith)) {
                             response.setContentType("application/plain;charset=utf8");
                             PrintWriter writer = response.getWriter();
                             writer.write(ProjectUtil.getJSONString(403, "你没有访问此功能的权限！"));
