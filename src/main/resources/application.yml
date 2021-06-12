@@ -62,6 +62,18 @@ spring:
     elasticsearch:
       cluster-name: my-application
       cluster-nodes: 127.0.0.1:9300
+  # TaskExecutionProperties
+  task:
+    execution:
+      pool:
+        core-size: 5
+        max-size: 15
+        queue-capacity: 100
+  # TaskSchedulingProperties
+    scheduling:
+      pool:
+        size: 5
+
 
 server:
   tomcat:
