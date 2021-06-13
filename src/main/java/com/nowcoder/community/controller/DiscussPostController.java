@@ -10,13 +10,11 @@ import com.nowcoder.community.service.CommentService;
 import com.nowcoder.community.service.DiscussPostService;
 import com.nowcoder.community.service.LikeService;
 import com.nowcoder.community.service.UserService;
-import com.nowcoder.community.util.Constant;
-import com.nowcoder.community.util.HostHolder;
-import com.nowcoder.community.util.PageUtil;
-import com.nowcoder.community.util.ProjectUtil;
+import com.nowcoder.community.util.*;
 import javafx.beans.binding.ObjectExpression;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -40,6 +38,8 @@ public class DiscussPostController implements Constant {
     private LikeService likeService;
     @Autowired
     private EventProducer eventProducer;
+    @Autowired
+    private RedisTemplate redisTemplate;
 
     @PostMapping("/add")
     @ResponseBody
@@ -63,6 +63,10 @@ public class DiscussPostController implements Constant {
                 .setEntityType(ENTITY_TYPE_POST)
                 .setEntityId(post.getId());
         eventProducer.fireEvent(event);
+
+        // 计算帖子分数
+        String redisKey = RedisKeyUtil.getPostScoreKey();
+        redisTemplate.opsForSet().add(redisKey, post.getId());
 
         // TODO 报错情况，将来统一处理
         return ProjectUtil.getJSONString(0, "发布成功！");
@@ -174,6 +178,10 @@ public class DiscussPostController implements Constant {
                 .setEntityType(ENTITY_TYPE_POST)
                 .setEntityId(id);
         eventProducer.fireEvent(event);
+
+        // 计算帖子分数
+        String redisKey = RedisKeyUtil.getPostScoreKey();
+        redisTemplate.opsForSet().add(redisKey, id);
 
         return ProjectUtil.getJSONString(0);
     }
