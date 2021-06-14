@@ -120,7 +120,7 @@ mapper:
 community:
   path:
     domain: http://localhost:8080
-    upload: d:/data/upload
+    upload: d:/ProjectSpace/nowcoder-community/data/upload
 
   
 #jwt配置
@@ -136,3 +136,9 @@ config:
 public-server:
   ip: 192.168.8.107
   port: 8090
+
+# wk
+wk:
+  image:
+    command: d:/DevEnv/wkhtmltopdf/bin/wkhtmltoimage
+    storage: d:/ProjectSpace/nowcoder-community/data/wk-images
