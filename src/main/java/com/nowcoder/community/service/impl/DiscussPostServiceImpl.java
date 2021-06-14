@@ -2,16 +2,24 @@ package com.nowcoder.community.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
+import com.github.benmanes.caffeine.cache.CacheLoader;
+import com.github.benmanes.caffeine.cache.Caffeine;
+import com.github.benmanes.caffeine.cache.LoadingCache;
 import com.nowcoder.community.entity.DiscussPost;
 import com.nowcoder.community.dao.DiscussPostMapper;
 import com.nowcoder.community.service.DiscussPostService;
 import com.nowcoder.community.util.SensitiveFilter;
+import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.util.HtmlUtils;
+import reactor.util.annotation.Nullable;
 
+import javax.annotation.PostConstruct;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 @Service
 @Slf4j
@@ -19,9 +27,38 @@ public class DiscussPostServiceImpl implements DiscussPostService {
 
     @Autowired
     private DiscussPostMapper discussPostMapper;
-
     @Autowired
     private SensitiveFilter filter;
+    @Value("${caffeine.posts.max-size}")
+    private int maxSize;
+    @Value("${caffeine.posts.expire-seconds}")
+    private int expireSeconds;
+
+    // Caffeine核心接口：Cache，LoadingCache，AsyncLoadingCache
+
+    // 帖子列表缓存
+    private LoadingCache<String, List<DiscussPost>> postListCache;
+
+    @PostConstruct
+    public void init(){
+        // 初始化帖子列表缓存
+        postListCache = Caffeine.newBuilder()
+                .maximumSize(maxSize)
+                .expireAfterWrite(expireSeconds, TimeUnit.SECONDS)
+                .build(new CacheLoader<String, List<DiscussPost>>() {
+                    @Nullable
+                    @Override
+                    public List<DiscussPost> load(@NonNull String key) throws Exception{
+                        if (key == null || key.length() == 0){
+                            throw new IllegalArgumentException("参数错误！");
+                        }
+
+                        // 二级缓存：Redis -> mysql
+                        log.debug("load post list from DB.");
+                        return findDiscussPosts(0, 1);
+                    }
+                });
+    }
 
     @Override
     public List<DiscussPost> findDiscussPosts(int userId, int orderMode) {
@@ -35,6 +72,10 @@ public class DiscussPostServiceImpl implements DiscussPostService {
         if (orderMode == 1){
             queryWrapper.orderByDesc("type","score", "create_time");
         }
+//        if (userId == 0 && orderMode == 1){
+//            return postListCache.get("postCache");
+//        }
+        log.debug("load post list from DB.");
         return discussPostMapper.selectList(queryWrapper);
     }
 

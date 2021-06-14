@@ -155,3 +155,9 @@ qiniu:
     share:
       name: 970829share
       url: http://quocn7a1z.hb-bkt.clouddn.com
+
+# caffeine
+caffeine:
+  posts:
+    max-size: 15
+    expire-seconds: 180
