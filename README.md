@@ -22,3 +22,7 @@ ElasticSearch：
   
 * [ElasticSearch安装配置](https://www.elastic.co/cn/downloads/past-releases/elasticsearch-6-4-3) (yml配置文件在project-init文件夹中)
 * [ElasticSearch中文分词插件](https://github.com/medcl/elasticsearch-analysis-ik/releases) (需与ES版本一致，v6.4.3，到ES路径的plugins下新建ik目录并解压缩)
+
+WKHtmlToPdf:
+
+* [下载链接](https://wkhtmltopdf.org/downloads.html)

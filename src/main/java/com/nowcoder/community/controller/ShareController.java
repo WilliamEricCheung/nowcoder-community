@@ -34,6 +34,8 @@ public class ShareController implements Constant {
     private String contextPath;
     @Value("${wk.image.storage}")
     private String wkImageStorage;
+    @Value("${qiniu.bucket.share.url}")
+    private String shareBucketUrl;
 
     @GetMapping("/share")
     @ResponseBody
@@ -50,13 +52,14 @@ public class ShareController implements Constant {
 
         // 返回访问路径
         Map<String, Object> map = new HashMap<>();
-        map.put("shareUrl", domain + contextPath + "share/image/" + fileName);
+//        map.put("shareUrl", domain + contextPath + "share/image/" + fileName);
 
+        map.put("shareUrl", shareBucketUrl + "/" + fileName);
         return ProjectUtil.getJSONString(0,  null, map);
     }
 
     // 获取长图
-    @GetMapping("/share/iamge/{fileName}")
+    @GetMapping("/share/image/{fileName}")
     public void getShareImage(@PathVariable("fileName") String fileName,
                               HttpServletResponse response){
         if (StringUtils.isBlank(fileName)){

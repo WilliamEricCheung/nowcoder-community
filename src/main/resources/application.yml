@@ -142,3 +142,16 @@ wk:
   image:
     command: d:/DevEnv/wkhtmltopdf/bin/wkhtmltoimage
     storage: d:/ProjectSpace/nowcoder-community/data/wk-images
+
+# qiniu
+qiniu:
+  key:
+    access: 3T5PwrDgIrwTAy3lSEC38ojvGvwnZgtoxHpnFyBQ
+    secret: SoTg7xbkWSEwexziBETIbAkCuUfj_dhIQ8oFRgGs
+  bucket:
+    header:
+      name: 970829header
+      url: http://quocsb5kk.hb-bkt.clouddn.com
+    share:
+      name: 970829share
+      url: http://quocn7a1z.hb-bkt.clouddn.com
