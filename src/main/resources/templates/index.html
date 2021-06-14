@@ -69,10 +69,10 @@
 					<!-- 筛选条件 -->
 					<ul class="nav nav-tabs mb-3">
 						<li class="nav-item">
-							<a class="nav-link active" href="#">最新</a>
+							<a th:class="|nav-link ${orderMode==0?'active':''}|" th:href="@{index(orderMode=0)}">最新</a>
 						</li>
 						<li class="nav-item">
-							<a class="nav-link" href="#">最热</a>
+							<a th:class="|nav-link ${orderMode==1?'active':''}|" th:href="@{index(orderMode=1)}">最热</a>
 						</li>
 					</ul>
 					<button type="button" th:if="${loginUser!=null}" class="btn btn-primary btn-sm position-absolute rt-0" data-toggle="modal" data-target="#publishModal">我要发布</button>
@@ -147,18 +147,18 @@
 				<nav class="mt-5" th:if="${discussPosts.total>0}">
 					<ul class="pagination justify-content-center">
 						<li class="page-item">
-							<a class="page-link" th:href="@{/index}">首页</a>
+							<a class="page-link" th:href="@{/index(orderMode=${orderMode})}">首页</a>
 						</li>
 						<li th:class="|page-item ${discussPosts.pageNum==1?'disabled':''}|">
-							<a class="page-link" th:href="@{/index(pageNum=${discussPosts.hasPreviousPage}?${discussPosts.prePage}:1)}">上一页</a></li>
+							<a class="page-link" th:href="@{/index(pageNum=${discussPosts.hasPreviousPage}?${discussPosts.prePage}:1, orderMode=${orderMode})}">上一页</a></li>
 						<li th:class="|page-item ${i==discussPosts.pageNum?'active':''}|" th:each="i:${#numbers.sequence(discussPosts.getNavigateFirstPage(),discussPosts.getNavigateLastPage())}">
-							<a class="page-link" th:href="@{/index(pageNum=${i})}" th:text="${i}">1</a>
+							<a class="page-link" th:href="@{/index(pageNum=${i}, orderMode=${orderMode})}" th:text="${i}">1</a>
 						</li>
 						<li th:class="|page-item ${discussPosts.pageNum==discussPosts.pages?'disabled':''}|">
-							<a class="page-link" th:href="@{/index(pageNum=${discussPosts.hasNextPage}?${discussPosts.nextPage}:${discussPosts.pages})}">下一页</a>
+							<a class="page-link" th:href="@{/index(pageNum=${discussPosts.hasNextPage}?${discussPosts.nextPage}:${discussPosts.pages}, orderMode=${orderMode})}">下一页</a>
 						</li>
 						<li class="page-item">
-							<a class="page-link" th:href="@{/index(pageNum=${discussPosts.pages})}">末页</a>
+							<a class="page-link" th:href="@{/index(pageNum=${discussPosts.pages}, orderMode=${orderMode})}">末页</a>
 						</li>
 					</ul>
 				</nav>

@@ -170,7 +170,7 @@ public class UserController implements Constant {
         }
         model.addAttribute("user", user);
         List<Map<String, Object>> list = new ArrayList<>();
-        List<DiscussPost> postList = discussPostService.findDiscussPosts(user.getId());
+        List<DiscussPost> postList = discussPostService.findDiscussPosts(user.getId(), 0);
         if (postList.size() > 0) {
             model.addAttribute("postNum", postList.size());
             for (DiscussPost post : postList) {

@@ -115,9 +115,9 @@ public class AlphaService {
         System.out.println("execute");
     }
 
-    @Scheduled(initialDelay = 10000, fixedRate = 1000)
-    public void execute2(){
-        log.debug("execute2");
-        System.out.println("execute2");
-    }
+//    @Scheduled(initialDelay = 10000, fixedRate = 1000)
+//    public void execute2(){
+//        log.debug("execute2");
+//        System.out.println("execute2");
+//    }
 }

@@ -44,7 +44,7 @@ public class MapperTests {
 
     @Test
     public void testFindPosts(){
-        List<DiscussPost> posts = postService.findDiscussPosts(0);
+        List<DiscussPost> posts = postService.findDiscussPosts(0, 0);
         for (DiscussPost post: posts)
             System.out.println(post);
     }

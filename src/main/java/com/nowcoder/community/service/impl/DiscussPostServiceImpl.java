@@ -24,12 +24,17 @@ public class DiscussPostServiceImpl implements DiscussPostService {
     private SensitiveFilter filter;
 
     @Override
-    public List<DiscussPost> findDiscussPosts(int userId) {
+    public List<DiscussPost> findDiscussPosts(int userId, int orderMode) {
         QueryWrapper<DiscussPost> queryWrapper = new QueryWrapper<>();
         queryWrapper.ne("status", 2);
         if (userId != 0)
             queryWrapper.eq("user_id", userId);
-        queryWrapper.orderByDesc("type","create_time");
+        if (orderMode == 0){
+            queryWrapper.orderByDesc("type","create_time");
+        }
+        if (orderMode == 1){
+            queryWrapper.orderByDesc("type","score", "create_time");
+        }
         return discussPostMapper.selectList(queryWrapper);
     }
 
@@ -76,6 +81,15 @@ public class DiscussPostServiceImpl implements DiscussPostService {
         UpdateWrapper<DiscussPost> updateWrapper = new UpdateWrapper<>();
         updateWrapper.eq("id", id);
         updateWrapper.set("status", status);
+        return discussPostMapper.update(post, updateWrapper);
+    }
+
+    @Override
+    public int updateScore(int id, double score) {
+        DiscussPost post = findDiscussPostById(id);
+        UpdateWrapper<DiscussPost> updateWrapper = new UpdateWrapper<>();
+        updateWrapper.eq("id", id);
+        updateWrapper.set("score", score);
         return discussPostMapper.update(post, updateWrapper);
     }
 }

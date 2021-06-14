@@ -45,8 +45,9 @@ public class HomeController implements Constant {
 
     @GetMapping("/index")
     public String getIndexPage(Model model,
-                               @RequestParam(defaultValue = "1", value = "pageNum") Integer pageNum) {
-        List<DiscussPost> list = discussPostService.findDiscussPosts(0);
+                               @RequestParam(defaultValue = "1", value = "pageNum") Integer pageNum,
+                               @RequestParam(defaultValue = "0", value = "orderMode") int orderMode) {
+        List<DiscussPost> list = discussPostService.findDiscussPosts(0, orderMode);
         List<Map<String, Object>> discussPosts = new ArrayList<>();
         if (list.size() > 0) {
             for (DiscussPost post : list) {
@@ -62,6 +63,7 @@ public class HomeController implements Constant {
         PageInfo<Map<String, Object>> pageInfo = PageUtil.startPage(discussPosts, pageNum, 10);
 //        log.info("Pages: " + pageInfo.getPages() + " PageNum: " + pageInfo.getPageNum() + " PageSize: " + pageInfo.getPageSize());
         model.addAttribute("discussPosts", pageInfo);
+        model.addAttribute("orderMode", orderMode);
         return "/index";
     }
 

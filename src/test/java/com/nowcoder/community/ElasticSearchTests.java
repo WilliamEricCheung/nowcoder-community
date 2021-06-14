@@ -54,15 +54,15 @@ public class ElasticSearchTests {
 
     @Test
     public void testInsertList() {
-        repository.saveAll(discussPostService.findDiscussPosts(101));
-        repository.saveAll(discussPostService.findDiscussPosts(102));
-        repository.saveAll(discussPostService.findDiscussPosts(103));
-        repository.saveAll(discussPostService.findDiscussPosts(111));
-        repository.saveAll(discussPostService.findDiscussPosts(112));
-        repository.saveAll(discussPostService.findDiscussPosts(131));
-        repository.saveAll(discussPostService.findDiscussPosts(132));
-        repository.saveAll(discussPostService.findDiscussPosts(133));
-        repository.saveAll(discussPostService.findDiscussPosts(134));
+        repository.saveAll(discussPostService.findDiscussPosts(101, 0));
+        repository.saveAll(discussPostService.findDiscussPosts(102, 0));
+        repository.saveAll(discussPostService.findDiscussPosts(103, 0));
+        repository.saveAll(discussPostService.findDiscussPosts(111, 0));
+        repository.saveAll(discussPostService.findDiscussPosts(112, 0));
+        repository.saveAll(discussPostService.findDiscussPosts(131, 0));
+        repository.saveAll(discussPostService.findDiscussPosts(132, 0));
+        repository.saveAll(discussPostService.findDiscussPosts(133, 0));
+        repository.saveAll(discussPostService.findDiscussPosts(134, 0));
     }
 
     @Test

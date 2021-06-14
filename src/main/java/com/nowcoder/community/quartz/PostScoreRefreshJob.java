@@ -77,6 +77,9 @@ public class PostScoreRefreshJob implements Job, Constant {
         double score = Math.log10(Math.max(weight, 1))
                 + (post.getCreateTime().getTime() - epoch.getTime()) / (1000 * 3600 * 24);
         // 更新帖子分数
-
+        discussPostService.updateScore(postId, score);
+        // 同步搜索的数据
+        post.setScore(score);
+        elasticSearchService.saveDiscussPost(post);
     }
 }
