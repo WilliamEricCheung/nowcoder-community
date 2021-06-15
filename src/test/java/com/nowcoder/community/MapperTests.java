@@ -1,5 +1,9 @@
 package com.nowcoder.community;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.nowcoder.community.dao.DiscussPostMapper;
 import com.nowcoder.community.entity.DiscussPost;
 import com.nowcoder.community.entity.User;
 import com.nowcoder.community.service.DiscussPostService;
@@ -20,6 +24,8 @@ public class MapperTests {
     private UserService userService;
     @Autowired
     private DiscussPostService postService;
+    @Autowired
+    private DiscussPostMapper postMapper;
 
     @Test
     public void testFindUserId(){
@@ -47,5 +53,16 @@ public class MapperTests {
         List<DiscussPost> posts = postService.findDiscussPosts(0, 0);
         for (DiscussPost post: posts)
             System.out.println(post);
+    }
+
+    @Test
+    public void testSelectPage(){
+        QueryWrapper<DiscussPost> queryWrapper = new QueryWrapper<>();
+        queryWrapper.ne("status", 2);
+        Page<DiscussPost> postPage = new Page<>(1, 5);
+        IPage<DiscussPost> postIPage = postMapper.selectPage(postPage, queryWrapper);
+        System.out.println("总页数："+postIPage.getPages());
+        System.out.println("总纪录数："+postIPage.getTotal());
+        postIPage.getRecords().forEach(System.out::println);
     }
 }

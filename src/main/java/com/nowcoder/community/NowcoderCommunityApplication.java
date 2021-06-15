@@ -9,7 +9,7 @@ import org.springframework.boot.web.servlet.support.SpringBootServletInitializer
 import javax.annotation.PostConstruct;
 
 @SpringBootApplication
-@MapperScan("com.nowcoder.community.mapper")
+@MapperScan("com.nowcoder.community.dao")
 public class NowcoderCommunityApplication extends SpringBootServletInitializer {
     @Override
     protected SpringApplicationBuilder configure(SpringApplicationBuilder builder){

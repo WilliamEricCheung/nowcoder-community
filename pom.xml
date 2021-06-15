@@ -17,7 +17,7 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <java.version>1.8</java.version>
         <druid.version>1.1.21</druid.version>
-        <mybatis-plus.version>3.0.6</mybatis-plus.version>
+        <mybatis-plus.version>3.4.0</mybatis-plus.version>
         <swagger.version>2.9.2</swagger.version>
         <swagger-bootstrap-ui.version>1.9.6</swagger-bootstrap-ui.version>
     </properties>
