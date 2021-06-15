@@ -1,5 +1,6 @@
 package com.nowcoder.community.controller;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.github.pagehelper.PageInfo;
 import com.nowcoder.community.entity.DiscussPost;
 import com.nowcoder.community.entity.User;
@@ -47,9 +48,11 @@ public class HomeController implements Constant {
     public String getIndexPage(Model model,
                                @RequestParam(defaultValue = "1", value = "pageNum") Integer pageNum,
                                @RequestParam(defaultValue = "0", value = "orderMode") int orderMode) {
-        List<DiscussPost> list = discussPostService.findDiscussPosts(0, orderMode);
+//        List<DiscussPost> list = discussPostService.findDiscussPosts(0, orderMode);
+        IPage<DiscussPost> postIPage = discussPostService.findDiscussPosts(0, orderMode, pageNum, 10);
+        List<DiscussPost> list = postIPage.getRecords();
         List<Map<String, Object>> discussPosts = new ArrayList<>();
-        if (list.size() > 0) {
+        if (list != null && list.size() > 0) {
             for (DiscussPost post : list) {
                 Map<String, Object> map = new HashMap<>();
                 map.put("post", post);
@@ -60,7 +63,7 @@ public class HomeController implements Constant {
                 discussPosts.add(map);
             }
         }
-        PageInfo<Map<String, Object>> pageInfo = PageUtil.startPage(discussPosts, pageNum, 10);
+        PageInfo<Map<String, Object>> pageInfo = PageUtil.startPage(discussPosts,pageNum,10, (int) postIPage.getTotal());
 //        log.info("Pages: " + pageInfo.getPages() + " PageNum: " + pageInfo.getPageNum() + " PageSize: " + pageInfo.getPageSize());
         model.addAttribute("discussPosts", pageInfo);
         model.addAttribute("orderMode", orderMode);

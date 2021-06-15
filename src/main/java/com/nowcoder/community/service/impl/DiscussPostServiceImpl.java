@@ -2,6 +2,8 @@ package com.nowcoder.community.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.github.benmanes.caffeine.cache.CacheLoader;
 import com.github.benmanes.caffeine.cache.Caffeine;
 import com.github.benmanes.caffeine.cache.LoadingCache;
@@ -37,7 +39,7 @@ public class DiscussPostServiceImpl implements DiscussPostService {
     // Caffeine核心接口：Cache，LoadingCache，AsyncLoadingCache
 
     // 帖子列表缓存
-    private LoadingCache<String, List<DiscussPost>> postListCache;
+    private LoadingCache<String, IPage<DiscussPost>> postListCache;
 
     @PostConstruct
     public void init(){
@@ -45,17 +47,17 @@ public class DiscussPostServiceImpl implements DiscussPostService {
         postListCache = Caffeine.newBuilder()
                 .maximumSize(maxSize)
                 .expireAfterWrite(expireSeconds, TimeUnit.SECONDS)
-                .build(new CacheLoader<String, List<DiscussPost>>() {
+                .build(new CacheLoader<String, IPage<DiscussPost>>() {
                     @Nullable
                     @Override
-                    public List<DiscussPost> load(@NonNull String key) throws Exception{
+                    public IPage<DiscussPost> load(@NonNull String key) throws Exception{
                         if (key == null || key.length() == 0){
                             throw new IllegalArgumentException("参数错误！");
                         }
 
                         // 二级缓存：Redis -> mysql
                         log.debug("load post list from DB.");
-                        return findDiscussPosts(0, 1);
+                        return findDiscussPosts(0, 1, 1, 10);
                     }
                 });
     }
@@ -77,6 +79,25 @@ public class DiscussPostServiceImpl implements DiscussPostService {
 //        }
         log.debug("load post list from DB.");
         return discussPostMapper.selectList(queryWrapper);
+    }
+
+    public IPage<DiscussPost> findDiscussPosts(int userId, int orderMode, int pageNum, int pageSize){
+        QueryWrapper<DiscussPost> queryWrapper = new QueryWrapper<>();
+        queryWrapper.ne("status", 2);
+        if (userId != 0)
+            queryWrapper.eq("user_id", userId);
+        if (orderMode == 0){
+            queryWrapper.orderByDesc("type","create_time");
+        }
+        if (orderMode == 1){
+            queryWrapper.orderByDesc("type","score", "create_time");
+        }
+//        if (userId == 0 && orderMode == 1){
+//            return postListCache.get("postCache");
+//        }
+        log.debug("load post list from DB.");
+        Page<DiscussPost> postPage = new Page<>(pageNum, pageSize);
+        return discussPostMapper.selectPage(postPage, queryWrapper);
     }
 
     @Override
