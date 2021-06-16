@@ -36,7 +36,7 @@ public class HomeController implements Constant {
 
     @GetMapping("/")
     public String index() {
-         return "redirect:/index";
+         return "forward:/index";
     }
 
     @GetMapping("/denied")

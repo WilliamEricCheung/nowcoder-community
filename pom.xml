@@ -12,6 +12,7 @@
     <version>0.0.1-SNAPSHOT</version>
     <name>nowcoder-community</name>
     <description>Demo project for Spring Boot</description>
+    <packaging>war</packaging>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
@@ -205,6 +206,7 @@
     </dependencies>
 
     <build>
+        <finalName>community</finalName>
         <plugins>
             <plugin>
                 <groupId>org.springframework.boot</groupId>
