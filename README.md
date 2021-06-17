@@ -75,6 +75,10 @@
               proxy_pass http://myserver;
           }
        }
+
+### 部署项目
+mvn clean package -Dmaven.test.skip=true
+
 ### 启动工程前以下服务先要启动
 
 MySQL：
@@ -101,6 +105,3 @@ ElasticSearch：
 WKHtmlToPdf:
 
 * [下载链接](https://wkhtmltopdf.org/downloads.html)
-
-*** 部署项目
-mvn clean package -Dmaven.test.skip=true
